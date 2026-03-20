@@ -10,34 +10,40 @@ function App() {
   const [history, setHistory] = useState([]);
 
   useEffect(() => {
-    const ws = new WebSocket(API);
+    let ws;
+    let reconnectTimeout;
+    function connect() {
+      ws = new WebSocket(API);
 
-    ws.onopen = () => {
-      console.log("Connected to WebSocket");
-      setConnected(true);
+      ws.onopen = () => {
+        console.log("Connected to WebSocket");
+        setConnected(true);
+      };
+
+      ws.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        if (data.type === "metrics") {
+          setMetrics(data.data);
+          setHistory((prev) => [...prev.slice(-59), data.data]);
+        }
+      };
+
+      ws.onclose = () => {
+        console.log("Disconnected from WebSocket");
+        setConnected(false);
+        // Try to reconnect after 2 seconds
+        reconnectTimeout = setTimeout(connect, 2000);
+      };
+
+      ws.onerror = (error) => {
+        console.error("WebSocket error:", error);
+      };
+    }
+    connect();
+    return () => {
+      if (ws) ws.close();
+      if (reconnectTimeout) clearTimeout(reconnectTimeout);
     };
-
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      if (data.type === "metrics") {
-        setMetrics(data.data);
-        setHistory((prev) => [...prev.slice(-59), data.data]);
-      }
-    };
-
-    ws.onclose = () => {
-      console.log("Disconnected from WebSocket");
-      setConnected(false);
-      setTimeout(() => {
-        window.location.reload();
-      }, 3000);
-    };
-
-    ws.onerror = (error) => {
-      console.error("WebSocket error:", error);
-    };
-
-    return () => ws.close();
   }, []);
 
   if (!metrics) {

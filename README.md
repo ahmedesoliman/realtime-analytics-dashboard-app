@@ -45,6 +45,25 @@ Frontend runs on: http://localhost:3001
 
 Visit: http://localhost:3001
 
+## Dashboard Preview
+
+### Live Demo (Animated)
+
+![Real-Time Analytics Dashboard Animation](dashboard-animation.gif)
+
+### Static View
+
+![Real-Time Analytics Dashboard](dashboard-screenshot.png)
+
+The dashboard displays real-time metrics with:
+
+- **Live Status Indicator** - Shows connection status at the top
+- **Key Metrics Cards** - CPU, Memory, Requests/sec, Response Time, Error Rate
+- **CPU & Memory Chart** - Historical data visualization with 60-second history
+- **Request Rate & Response Time Chart** - Dual-axis chart showing throughput and latency
+- **Error Rate Chart** - Tracks error rates over time
+- **Auto-Refresh** - Updates every second via WebSocket with smooth animations
+
 ## How It Works
 
 1. **Backend generates metrics** every second with realistic fluctuations

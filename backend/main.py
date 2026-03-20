@@ -104,18 +104,17 @@ async def get_latest_metrics():
     return metrics_gen.generate_metrics()
 
 
+
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
-    """WebSocket endpoint for streaming metrics"""
+    """WebSocket endpoint for streaming metrics (per-client)"""
     await manager.connect(websocket)
     try:
         while True:
-            # Generate metrics every second
             await asyncio.sleep(1)
             metrics = metrics_gen.generate_metrics()
-            
-            # Broadcast to all connected clients
-            await manager.broadcast({
+            # Send only to this client
+            await websocket.send_json({
                 "type": "metrics",
                 "data": metrics
             })
